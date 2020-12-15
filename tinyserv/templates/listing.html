@@ -24,8 +24,8 @@
 			{% for entry in entries %}
 			<tr>
 				<td data-sort="{{entry.name}}"><a href="{{entry.path}}">{{entry.name}}</a></td>
-				<td data-sort="{{entry.timestamp}}"><time datetime="{{entry.timestamp}}"><abbr arial-label="{{entry.human_long_timestamp}}">{{entry.human_timestamp}}</abbr></time></td>
-				<td data-sort="{{entry.size}}">{{entry.human_size}}</td>
+				<td data-sort="{{entry.timestamp}}"><time datetime="{{entry.timestamp}}"><abbr aria-label="{{entry.human_long_timestamp}}">{{entry.human_timestamp}}</abbr></time></td>
+				<td data-sort="{{entry.size}}"><span aria-label="{{entry.human_long_size}}">{{entry.human_size}}</span></td>
 			</tr>
 			{% endfor %}
 		</tbody>
@@ -34,7 +34,5 @@
 	{% else %}
 	<p>No files available.</p>
 	{% endif %}
-	<p>The address you requested could not be found.</p>
-	<p><a href="/">Go back to the index.</a></p>
 </section>
 {% endblock %}

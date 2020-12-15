@@ -1,15 +1,40 @@
 from http.server import BaseHTTPRequestHandler
+from mimetypes import guess_type
+import os.path
 from typing import Optional
-
-from tinyserv.config import Config
 
 from jinja2 import Environment, PackageLoader, select_autoescape, Template
 
+from tinyserv.config import Config
+from tinyserv.entry import Entry
 
 class CustomHTTPRequestHandler(BaseHTTPRequestHandler):
     configuration: Optional[Config] = None
     template_404: Optional[Template] = None
     template_listing: Optional[Template] = None
+
+    def _real_path(self) -> str:
+        """
+        Return the absolute path for the request.
+
+        Adds a trailing / to directories.
+
+        If serve_index is enabled, return the path for index.html/index.htm if
+        it exists.
+
+        Returns None if the target doesn't exist.
+        """
+        target = os.path.join(self.configuration.path, self.path.lstrip("/"))
+        if not os.path.exists(target):
+            return None
+        if os.path.isdir(target):
+            if self.configuration.serve_index:
+                if os.path.exists(os.path.join(target, "index.html")):
+                    return os.path.join(target, "index.html")
+                if os.path.exists(os.path.join(target, "index.htm")):
+                    return os.path.join(target, "index.htm")
+            return target + "/"
+        return target
 
     @classmethod
     def initialize(cls, configuration: Config) -> None:
@@ -28,16 +53,52 @@ class CustomHTTPRequestHandler(BaseHTTPRequestHandler):
                 "Tried to handle HTTP request before initializing CustomHTTPRequestHandler."
             )
 
+    def _send_get_headers(self) -> None:
+        """Return the headers for the given path."""
+        real_path = self._real_path()
+        if real_path is None:
+            self.send_response(404)
+            self.send_header('Content-Type', 'text/html')
+            self.end_headers()
+            return
+
+        self.send_response(200)
+        if real_path.endswith("/"):
+            self.send_header('Content-Type', 'text/html')
+        else:
+            mimetype, encoding = guess_type(real_path)
+            if mimetype is not None:
+                self.send_header('Content-Type', mimetype)
+            if encoding is not None:
+                self.send_header('Content-Encoding', encoding)
+        self.end_headers()
+
     def do_HEAD(self) -> None:
         self.check_initialized()
-        print("HEAD", self.path)
+        self._send_get_headers()
 
     def do_GET(self) -> None:
         self.check_initialized()
-        self.send_response(200)
-        self.send_header('Content-Type', 'text/html')
-        self.end_headers()
-        self.wfile.write(self.template_404.render(path=self.path).encode("utf-8"))
+        self._send_get_headers()
+        real_path = self._real_path()
+
+        # 404
+        if real_path is None:
+            self.wfile.write(self.template_404.render(path=self.path).encode("utf-8"))
+        # Real file
+        elif not real_path.endswith("/"):
+            with open(real_path, 'rb') as data:
+                while True:
+                    block = data.read(1024)
+                    if not block:
+                        break
+                    self.wfile.write(block)
+        # Directory listing
+        else:
+            entries = Entry.generate_listing(self.configuration.path, real_path, self.configuration.all_files)
+            self.wfile.write(self.template_listing.render(entries=entries).encode("utf-8"))
+
+
 
     def do_POST(self) -> None:
         self.check_initialized()
