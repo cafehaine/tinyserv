@@ -40,7 +40,10 @@ class Entry:
         if path != "":
             output.append(cls.generate_dir_up(root, path))
         for dir_entry in os.scandir(os.path.join(root, path)):
+            if not show_hidden and dir_entry.name.startswith("."):
+                continue
             output.append(
                 cls(root, os.path.join(path, dir_entry.name), dir_entry.stat())
             )
+        # TODO default sort by name
         return output

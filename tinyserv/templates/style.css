@@ -33,8 +33,29 @@ main > h1 {
 	margin-bottom: 1rem;
 }
 
+/* Sections */
+
 main > section {
 	border: 1px solid #000000;
 	border-radius: 0.5rem;
 	padding: 0.5rem;
+}
+
+main > section:not(:first-of-type) {
+	margin-top: 1rem;
+}
+
+/* File table */
+
+table.file_table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+table.file_table > tbody > tr:nth-child(2n) {
+	background: #EEEEEE;
+}
+
+table.file_table > tbody > tr {
+	height: 1.7rem;
 }
