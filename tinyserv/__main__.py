@@ -10,7 +10,9 @@ from tinyserv.config import Config
 
 def run_server(config: Config) -> None:
     CustomHTTPRequestHandler.initialize(config)
-    server = ThreadingHTTPServer((config.listen_address, config.base_port), CustomHTTPRequestHandler)
+    server = ThreadingHTTPServer(
+        (config.listen_address, config.base_port), CustomHTTPRequestHandler
+    )
     try:
         server.serve_forever()
     except KeyboardInterrupt:

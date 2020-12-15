@@ -7,6 +7,10 @@
 {% if allow_uploads %}
 <section>
 	<h2>Upload files</h2>
+	<form action="" method="post" encoding="multipart/form-data">
+		<input type="file" multiple name="files">
+		<input type="submit" value="Upload">
+	</form>
 </section>
 {% endif %}
 <section>

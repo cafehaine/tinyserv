@@ -4,8 +4,11 @@ import os
 import os.path
 from stat import S_IFDIR
 
+
 class Entry:
-    def __init__(self, root: str, path: str, stat: os.stat_result, *, override_name=None):
+    def __init__(
+        self, root: str, path: str, stat: os.stat_result, *, override_name=None
+    ):
         if override_name is not None:
             self.name = override_name
         else:
@@ -16,12 +19,12 @@ class Entry:
         self.path = "/" + path
         timestamp = datetime.fromtimestamp(stat.st_mtime)
         self.timestamp = timestamp.isoformat()
-        self.human_timestamp = self.timestamp # TODO prettier format
-        self.human_long_timestamp = self.timestamp # TODO long version of human
+        self.human_timestamp = self.timestamp  # TODO prettier format
+        self.human_long_timestamp = self.timestamp  # TODO long version of human
         size = stat.st_size
         self.size = size
-        self.human_size = size # TODO prettier format
-        self.human_long_size = size # TODO long version of human
+        self.human_size = size  # TODO prettier format
+        self.human_long_size = size  # TODO long version of human
 
     @classmethod
     def generate_dir_up(cls, root: str, path: str) -> 'Entry':
@@ -37,5 +40,7 @@ class Entry:
         if path != "":
             output.append(cls.generate_dir_up(root, path))
         for dir_entry in os.scandir(os.path.join(root, path)):
-            output.append(cls(root, os.path.join(path, dir_entry.name), dir_entry.stat()))
+            output.append(
+                cls(root, os.path.join(path, dir_entry.name), dir_entry.stat())
+            )
         return output
