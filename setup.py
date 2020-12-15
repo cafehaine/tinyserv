@@ -6,6 +6,7 @@ setup(
     version="0.0.0",
     packages=["tinyserv"],
     scripts=["scripts/tinyserv"],
+    include_package_data=True,
     install_requires=["Jinja2>=2.11.2,<2.12.0"],
     license='GPLv3',
     classifiers=[

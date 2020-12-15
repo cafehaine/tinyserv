@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}{{path}} listing{% endblock %}
+
+{% block body %}
+<h1>{{path}} listing</h1>
+{% if allow_uploads %}
+<section>
+	<h2>Upload files</h2>
+</section>
+{% endif %}
+<section>
+	<h2>Files</h2>
+	{% if entries %}
+	<table>
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>Last modified</th>
+				<th>Size</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for entry in entries %}
+			<tr>
+				<td data-sort="{{entry.name}}"><a href="{{entry.path}}">{{entry.name}}</a></td>
+				<td data-sort="{{entry.timestamp}}"><time datetime="{{entry.timestamp}}"><abbr arial-label="{{entry.human_long_timestamp}}">{{entry.human_timestamp}}</abbr></time></td>
+				<td data-sort="{{entry.size}}">{{entry.human_size}}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	</ul>
+	{% else %}
+	<p>No files available.</p>
+	{% endif %}
+	<p>The address you requested could not be found.</p>
+	<p><a href="/">Go back to the index.</a></p>
+</section>
+{% endblock %}

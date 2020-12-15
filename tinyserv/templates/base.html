@@ -1,0 +1,20 @@
+<!DOCTYPE HTML>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>{% block title %}NO TITLE SET{% endblock%} | tinyserv</title>
+		{# include style.css to prevent overriding /style.css #}
+		<style>{% include "style.css" %}</style>
+	</head>
+	<body>
+		<main>
+			{% block body %}
+			<h1>No body set.</h1>
+			{% endblock %}
+		</main>
+		<footer>
+			<p>tinyserv</p>
+		</footer>
+	</body>
+</html>
+
