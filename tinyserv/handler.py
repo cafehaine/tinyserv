@@ -15,25 +15,28 @@ class CustomHTTPRequestHandler(BaseHTTPRequestHandler):
 
     def _real_path(self) -> str:
         """
-        Return the absolute path for the request.
+        Return the real path for the request.
 
-        Adds a trailing / to directories.
+        Removes the leading /.
+
+        Adds a trailing / to directories (except for root dir).
 
         If serve_index is enabled, return the path for index.html/index.htm if
         it exists.
 
         Returns None if the target doesn't exist.
         """
-        target = os.path.join(self.configuration.path, self.path.lstrip("/"))
-        if not os.path.exists(target):
+        target = self.path.lstrip("/")
+        abspath = os.path.abspath(os.path.join(self.configuration.path, target))
+        if not os.path.exists(abspath):
             return None
-        if os.path.isdir(target):
+        if os.path.isdir(abspath):
             if self.configuration.serve_index:
-                if os.path.exists(os.path.join(target, "index.html")):
+                if os.path.exists(os.path.join(abspath, "index.html")):
                     return os.path.join(target, "index.html")
-                if os.path.exists(os.path.join(target, "index.htm")):
+                if os.path.exists(os.path.join(abspath, "index.htm")):
                     return os.path.join(target, "index.htm")
-            return target + "/"
+            return target + "/" if target else target
         return target
 
     @classmethod
@@ -63,7 +66,7 @@ class CustomHTTPRequestHandler(BaseHTTPRequestHandler):
             return
 
         self.send_response(200)
-        if real_path.endswith("/"):
+        if real_path.endswith("/") or not real_path:
             self.send_header('Content-Type', 'text/html')
         else:
             mimetype, encoding = guess_type(real_path)
@@ -86,7 +89,7 @@ class CustomHTTPRequestHandler(BaseHTTPRequestHandler):
         if real_path is None:
             self.wfile.write(self.template_404.render(path=self.path).encode("utf-8"))
         # Real file
-        elif not real_path.endswith("/"):
+        elif not (real_path.endswith("/") or not real_path):
             with open(real_path, 'rb') as data:
                 while True:
                     block = data.read(1024)
@@ -95,6 +98,9 @@ class CustomHTTPRequestHandler(BaseHTTPRequestHandler):
                     self.wfile.write(block)
         # Directory listing
         else:
+            print("GET")
+            print("root:", self.configuration.path)
+            print("path:", real_path)
             entries = Entry.generate_listing(self.configuration.path, real_path, self.configuration.all_files)
             self.wfile.write(self.template_listing.render(entries=entries).encode("utf-8"))
 

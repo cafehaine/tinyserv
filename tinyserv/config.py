@@ -1,6 +1,7 @@
 """
 Define the Config class, holding all the options for tinyserv.
 """
+import os.path
 
 
 class Config:
@@ -13,4 +14,4 @@ class Config:
         self.allow_uploads: bool = kwargs['allow_uploads']
         self.all_files: bool = kwargs['all_files']
         self.serve_index: bool = kwargs['serve_index']
-        self.path: str = kwargs['path']
+        self.path: str = os.path.abspath(kwargs['path'])

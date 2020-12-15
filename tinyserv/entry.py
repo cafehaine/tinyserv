@@ -13,7 +13,7 @@ class Entry:
             if stat.st_mode & S_IFDIR:
                 self.name += "/"
 
-        self.path = path
+        self.path = "/" + path
         timestamp = datetime.fromtimestamp(stat.st_mtime)
         self.timestamp = timestamp.isoformat()
         self.human_timestamp = self.timestamp # TODO prettier format
@@ -34,8 +34,8 @@ class Entry:
     @classmethod
     def generate_listing(cls, root: str, path: str, show_hidden: bool) -> List['Entry']:
         output = []
-        if path != "/":
+        if path != "":
             output.append(cls.generate_dir_up(root, path))
         for dir_entry in os.scandir(os.path.join(root, path)):
-            output.append(cls(root, dir_entry.path, dir_entry.stat()))
+            output.append(cls(root, os.path.join(path, dir_entry.name), dir_entry.stat()))
         return output
