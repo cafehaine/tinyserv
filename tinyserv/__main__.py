@@ -10,7 +10,7 @@ from tinyserv.config import Config
 
 def run_server(config: Config) -> None:
     CustomHTTPRequestHandler.initialize(config)
-    server = ThreadingHTTPServer(("0.0.0.0", 8000), CustomHTTPRequestHandler)
+    server = ThreadingHTTPServer((config.listen_address, config.base_port), CustomHTTPRequestHandler)
     server.serve_forever()
 
 
@@ -58,9 +58,9 @@ def main() -> None:
         "path", type=str, nargs="?", default=".", help="The directory to serve."
     )
 
-    parser.parse_args()
+    arguments = parser.parse_args()
 
-    config = Config()  # TODO
+    config = Config(**vars(arguments))
 
     run_server(config)
 
