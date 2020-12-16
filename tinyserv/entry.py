@@ -1,5 +1,5 @@
-from datetime import datetime
-from typing import List
+from datetime import datetime, timedelta
+from typing import List, Tuple
 import os
 import os.path
 from stat import S_IFDIR
@@ -19,12 +19,62 @@ class Entry:
         self.path = "/" + path
         timestamp = datetime.fromtimestamp(stat.st_mtime)
         self.timestamp = timestamp.isoformat()
-        self.human_timestamp = self.timestamp  # TODO prettier format
-        self.human_long_timestamp = self.timestamp  # TODO long version of human
+        self.human_timestamp, self.human_long_timestamp = self._human_date(timestamp)
+
         size = stat.st_size
         self.size = size
-        self.human_size = size  # TODO prettier format
-        self.human_long_size = size  # TODO long version of human
+        self.human_size, self.human_long_size = self._human_size(size)
+
+    @staticmethod
+    def _human_size(size: float) -> Tuple[str, str]:
+        """Return a short and full version of the human formated size."""
+        sizes = [
+            ("B", "byte"),
+            ("KiB", "kibibyte"),
+            ("MiB", "mibibyte"),
+            ("GiB", "gibibyte"),
+            ("TiB", "tebibyte"),
+            ("PiB", "pebibyte"),
+            ("EiB", "exbibyte"),
+            ("ZiB", "zebibyte"),
+            ("YiB", "yobibyte"),
+        ]
+
+        size_index = 0
+
+        while size >= 1000 and size_index < len(sizes) - 1:
+            size /= 1024
+            size_index += 1
+
+        value = f"{size:.2f}".rstrip("0").rstrip(".")
+
+        short = f"{value} {sizes[size_index][0]}"
+        full_unit = sizes[size_index][1] if size != 1 else f"{sizes[size_index][1]}s"
+        full = f"{value} {full_unit}"
+        return (short, full)
+
+    @staticmethod
+    def _human_date(timestamp: datetime) -> Tuple[str, str]:
+        delta_now = datetime.now() - timestamp
+        if delta_now <= timedelta(seconds=60):
+            secs = delta_now.seconds
+            if secs == 1:
+                return (f"{secs}s ago", f"{secs} second ago")
+            return (f"{secs}s ago", f"{secs} seconds ago")
+        if delta_now <= timedelta(seconds=60 * 60):
+            mins = delta_now.seconds // 60
+            if mins == 1:
+                return (f"{mins}m ago", f"{mins} minute ago")
+            return (f"{mins}m ago", f"{mins} minutes ago")
+        if delta_now <= timedelta(seconds=60 * 60 * 24):
+            hours = delta_now.seconds // 60 // 60
+            if hours == 1:
+                return (f"{hours}h ago", f"{hours} hour ago")
+            return (f"{hours}h ago", f"{hours} hours ago")
+        if delta_now <= timedelta(days=1):
+            return ("yesterday", "yesterday")
+
+        return (f"{timestamp:%x}", f"{timestamp:%x}")
 
     @classmethod
     def generate_dir_up(cls, root: str, path: str) -> 'Entry':

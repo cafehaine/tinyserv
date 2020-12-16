@@ -52,10 +52,23 @@ table.file_table {
 	border-collapse: collapse;
 }
 
+table.file_table > thead > tr > th {
+	font-weight: 700;
+}
+
 table.file_table > tbody > tr:nth-child(2n) {
 	background: #EEEEEE;
 }
 
 table.file_table > tbody > tr {
 	height: 1.7rem;
+}
+
+table.file_table > tbody > tr > td:nth-of-type(3) {
+	text-align: right;
+}
+
+table.file_table > tbody > tr > td:nth-of-type(4) {
+	text-align: " " right; /* not yet supported on any browser */
+	text-align: right;
 }
