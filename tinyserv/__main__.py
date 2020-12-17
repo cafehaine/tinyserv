@@ -3,17 +3,55 @@ A tiny http server to transfer files between computers.
 """
 from argparse import ArgumentParser, Namespace
 from http.server import ThreadingHTTPServer
+from json import loads
+from subprocess import run
+from typing import List
 
 from tinyserv.handler import CustomHTTPRequestHandler
 from tinyserv.config import Config
 
 
+def list_ips() -> List[str]:
+    """
+    Return a list of valid IP addresses for this computer.
+
+    Uses the ip -j command, might not be available everywhere.
+    """
+    ip_show = run(["ip", "-j", "addr", "show"], capture_output=True)
+    devices = loads(ip_show.stdout)
+
+    output = []
+
+    for device in devices:
+        if device['operstate'] == 'DOWN':
+            continue
+        for address in device['addr_info']:
+            host = address['scope'] == 'host'
+            if host:
+                continue
+            v6 = address['family'] == 'inet6'
+            addr = address['local']
+            if v6:
+                continue  # At the moment, Python's TCP server only supports ipv4
+            else:
+                output.append(addr)
+
+    return output
+
+
 def run_server(config: Config) -> None:
     CustomHTTPRequestHandler.initialize(config)
-    server = ThreadingHTTPServer(
-        (config.listen_address, config.base_port), CustomHTTPRequestHandler
-    )
+    server = ThreadingHTTPServer(("", config.base_port), CustomHTTPRequestHandler)
     try:
+        ips = list_ips()
+        if not ips:
+            print(
+                "Couldn't find any ip for this device, are you connected to the network?"
+            )
+        else:
+            print("Connect to:")
+            for ip in ips:
+                print(f"- http://{ip}:8000")
         server.serve_forever()
     except KeyboardInterrupt:
         print()
@@ -36,14 +74,6 @@ def main() -> None:
         nargs="?",
         default=8000,
         help="The starting port for the server.",
-    )
-    parser.add_argument(
-        "--listen-address",
-        "-l",
-        type=str,
-        nargs="?",
-        default="0.0.0.0",
-        help="The listening address for the server.",
     )
     parser.add_argument(
         "--allow-uploads",
