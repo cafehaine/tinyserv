@@ -105,6 +105,12 @@ def main() -> None:
         help="Show qr codes with the urls to connect to the server.",
     )
     parser.add_argument(
+        "--verbose",
+        "-v",
+        action='store_true',
+        help="Show entering connections.",
+    )
+    parser.add_argument(
         "path", type=str, nargs="?", default=".", help="The directory to serve."
     )
 

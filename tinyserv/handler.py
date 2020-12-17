@@ -119,3 +119,8 @@ class CustomHTTPRequestHandler(BaseHTTPRequestHandler):
     def do_POST(self) -> None:
         self.check_initialized()
         print("POST", self.path)
+
+    def log_request(self, *args, **kwargs) -> None:
+        self.check_initialized()
+        if self.configuration.verbose:
+            super().log_request(*args, **kwargs)
