@@ -49,7 +49,7 @@ class Entry:
         value = f"{size:.2f}".rstrip("0").rstrip(".")
 
         short = f"{value} {sizes[size_index][0]}"
-        full_unit = sizes[size_index][1] if size != 1 else f"{sizes[size_index][1]}s"
+        full_unit = sizes[size_index][1] if size == 1 else f"{sizes[size_index][1]}s"
         full = f"{value} {full_unit}"
         return (short, full)
 
