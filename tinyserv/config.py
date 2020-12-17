@@ -13,4 +13,5 @@ class Config:
         self.allow_uploads: bool = kwargs['allow_uploads']
         self.all_files: bool = kwargs['all_files']
         self.serve_index: bool = kwargs['serve_index']
+        self.show_qr: bool = kwargs['qr_code']
         self.path: str = os.path.abspath(kwargs['path'])

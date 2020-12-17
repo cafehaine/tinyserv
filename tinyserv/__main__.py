@@ -9,6 +9,7 @@ from typing import List
 
 from tinyserv.handler import CustomHTTPRequestHandler
 from tinyserv.config import Config
+from tinyserv.qr import show_qrs
 
 
 def list_ips() -> List[str]:
@@ -32,9 +33,9 @@ def list_ips() -> List[str]:
             v6 = address['family'] == 'inet6'
             addr = address['local']
             if v6:
+                addr = f"[{addr}]"
                 continue  # At the moment, Python's TCP server only supports ipv4
-            else:
-                output.append(addr)
+            output.append(addr)
 
     return output
 
@@ -44,14 +45,17 @@ def run_server(config: Config) -> None:
     server = ThreadingHTTPServer(("", config.base_port), CustomHTTPRequestHandler)
     try:
         ips = list_ips()
+        urls = [f"http://{ip}:{config.base_port}" for ip in ips]
         if not ips:
             print(
                 "Couldn't find any ip for this device, are you connected to the network?"
             )
         else:
             print("Connect to:")
-            for ip in ips:
-                print(f"- http://{ip}:8000")
+        for url in urls:
+            print(f"- {url}")
+        if config.show_qr:
+            show_qrs(urls)
         server.serve_forever()
     except KeyboardInterrupt:
         print()
@@ -89,6 +93,12 @@ def main() -> None:
         "-i",
         action='store_true',
         help="Try to serve index.htm[l] if present.",
+    )
+    parser.add_argument(
+        "--qr-code",
+        "-Q",
+        action='store_true',
+        help="Show qr codes with the urls to connect to the server.",
     )
     parser.add_argument(
         "path", type=str, nargs="?", default=".", help="The directory to serve."
