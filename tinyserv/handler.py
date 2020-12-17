@@ -145,7 +145,9 @@ class CustomHTTPRequestHandler(BaseHTTPRequestHandler):
 
         self.send_response(200)
         self.send_header('Content-Type', 'application/zip')
-        self.send_header('Content-Disposition', f'attachment; filename="{archive_name}.zip"')
+        self.send_header(
+            'Content-Disposition', f'attachment; filename="{archive_name}.zip"'
+        )
         self.end_headers()
         for data in zipfile:
             self.wfile.write(data)

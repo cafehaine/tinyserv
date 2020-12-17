@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 import os
 import os.path
 from stat import S_IFDIR
@@ -7,7 +7,13 @@ from stat import S_IFDIR
 
 class Entry:
     def __init__(
-        self, root: str, path: str, stat: os.stat_result, *, override_name=None
+        self,
+        root: str,
+        path: str,
+        stat: os.stat_result,
+        *,
+        override_name: Optional[str] = None,
+        is_up: bool = False,
     ):
         if override_name is not None:
             self.name = override_name
@@ -24,6 +30,8 @@ class Entry:
         size = stat.st_size
         self.size = size
         self.human_size, self.human_long_size = self._human_size(size)
+
+        self.is_up = is_up
 
     @staticmethod
     def _human_size(size: float) -> Tuple[str, str]:
@@ -82,7 +90,7 @@ class Entry:
             path = path[:-1]
         path = os.path.dirname(path)
         stat = os.stat(os.path.join(root, path))
-        return cls(root, path, stat, override_name="..")
+        return cls(root, path, stat, override_name="..", is_up=True)
 
     @classmethod
     def generate_listing(cls, root: str, path: str, show_hidden: bool) -> List['Entry']:

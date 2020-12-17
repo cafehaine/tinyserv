@@ -37,7 +37,7 @@
 			<tbody>
 				{% for entry in entries %}
 				<tr>
-					<td><input name="file_selection" value="{{entry.path}}" type="checkbox" autocomplete="off"></td>
+					<td>{% if not entry.is_up %}<input name="file_selection" value="{{entry.path}}" type="checkbox" autocomplete="off">{% endif %}</td>
 					<td data-sort="{{entry.name}}"><a href="{{entry.path}}">{{entry.name}}</a></td>
 					<td data-sort="{{entry.timestamp}}"><time datetime="{{entry.timestamp}}"><abbr aria-label="{{entry.human_long_timestamp}}">{{entry.human_timestamp}}</abbr></time></td>
 					<td data-sort="{{entry.size}}"><span aria-label="{{entry.human_long_size}}">{{entry.human_size}}</span></td>
