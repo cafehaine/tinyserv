@@ -118,24 +118,42 @@ class CustomHTTPRequestHandler(BaseHTTPRequestHandler):
                 ).encode("utf-8")
             )
 
+    def _handle_download_request(self) -> None:
+        query_body = self.rfile.read(int(self.headers['Content-Length']))
+        query = parse_qs(query_body.decode('utf-8'))
+        zipfile = zipstream.ZipFile(allowZip64=True)
+        prefix = query.get('prefix', ['/'])[0]
+        os_prefix = os.path.join(self.configuration.path, prefix[1:])
+
+        for filename in query.get('file_selection', []):
+            file_path = os.path.join(self.configuration.path, filename[1:])
+            # if is directory, walk directory tree
+            if os.path.isdir(file_path):
+                for entry in os.walk(file_path):
+                    os_path = entry[0]
+                    zip_path = os_path.removeprefix(os_prefix)
+                    for child in entry[2]:
+                        child_os_path = os.path.join(os_path, child)
+                        child_zip_path = os.path.join(zip_path, child)
+                        zipfile.write(child_os_path, child_zip_path)
+            else:
+                zipfile.write(file_path, filename.removeprefix(prefix))
+
+        archive_name = os.path.basename(prefix)
+        if not archive_name:
+            archive_name = "tinyserv"
+
+        self.send_response(200)
+        self.send_header('Content-Type', 'application/zip')
+        self.send_header('Content-Disposition', f'attachment; filename="{archive_name}.zip"')
+        self.end_headers()
+        for data in zipfile:
+            self.wfile.write(data)
+
     def do_POST(self) -> None:
         self.check_initialized()
         if self.path == "/download":
-            query_body = self.rfile.read(int(self.headers['Content-Length']))
-            query = parse_qs(query_body.decode('utf-8'))
-            zipfile = zipstream.ZipFile(allowZip64=True)
-            prefix = query.get('prefix', ['/'])[0]
-            print(query)
-            for filename in query.get('file_selection', []):
-                file_path = os.path.join(self.configuration.path, filename[1:])
-                zipfile.write(file_path, filename.removeprefix(prefix))
-                # TODO use os.walk to properly handle directories
-            self.send_response(200)
-            self.send_header('Content-Type', 'application/zip')
-            self.send_header('Content-Disposition', 'attachment; filename="tinyserv.zip"')
-            self.end_headers()
-            for data in zipfile:
-                self.wfile.write(data)
+            self._handle_download_request()
         else:
             raise ValueError("Invalid POST path.")
 
