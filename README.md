@@ -8,7 +8,7 @@ The feature roadmap is the following:
 - [x] Optional `index.html`/`index.htm` serving
 - [x] Hidden file listing
 - [ ] File upload
-- [ ] Directory/multiple file downloads
+- [x] Directory/multiple file downloads
 - [x] QR code for connecting (plus reminder of IP in text form)
 
 As you can clearly see not much (nothing) is implemented right now.
