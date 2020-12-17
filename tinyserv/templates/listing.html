@@ -8,6 +8,7 @@
 <section>
 	<h2>Upload files</h2>
 	<form action="" method="post" encoding="multipart/form-data">
+		<input type="hidden" name="action" value="upload">
 		<input type="file" multiple name="files">
 		<input type="submit" value="Upload">
 	</form>
@@ -16,32 +17,41 @@
 <section>
 	<h2>Files</h2>
 	{% if entries %}
-	<table class="file_table">
-		<colgroup>
-			<col class="checkbox">
-			<col class="name">
-			<col class="date">
-			<col class="size">
-		</colgroup>
-		<thead>
-			<tr>
-				<th></th>
-				<th>Name</th>
-				<th>Last modified</th>
-				<th>Size</th>
-			</tr>
-		</thead>
-		<tbody>
-			{% for entry in entries %}
-			<tr>
-				<td><input name="file_selection" value="{{entry.path}}" type="checkbox" autocomplete="off"></td>
-				<td data-sort="{{entry.name}}"><a href="{{entry.path}}">{{entry.name}}</a></td>
-				<td data-sort="{{entry.timestamp}}"><time datetime="{{entry.timestamp}}"><abbr aria-label="{{entry.human_long_timestamp}}">{{entry.human_timestamp}}</abbr></time></td>
-				<td data-sort="{{entry.size}}"><span aria-label="{{entry.human_long_size}}">{{entry.human_size}}</span></td>
-			</tr>
-			{% endfor %}
-		</tbody>
-	</table>
+	<form action="" method="post">
+		<input type="hidden" name="action" value="download">
+		<table class="file_table">
+			<colgroup>
+				<col class="checkbox">
+				<col class="name">
+				<col class="date">
+				<col class="size">
+			</colgroup>
+			<thead>
+				<tr>
+					<th></th>
+					<th>Name</th>
+					<th>Last modified</th>
+					<th>Size</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for entry in entries %}
+				<tr>
+					<td><input name="file_selection" value="{{entry.path}}" type="checkbox" autocomplete="off"></td>
+					<td data-sort="{{entry.name}}"><a href="{{entry.path}}">{{entry.name}}</a></td>
+					<td data-sort="{{entry.timestamp}}"><time datetime="{{entry.timestamp}}"><abbr aria-label="{{entry.human_long_timestamp}}">{{entry.human_timestamp}}</abbr></time></td>
+					<td data-sort="{{entry.size}}"><span aria-label="{{entry.human_long_size}}">{{entry.human_size}}</span></td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+		<label for="download_format">Download format:</label>
+		<select name="download_format">
+			<option value="zip" selected>.zip</option>
+			<option value="lzma">.xz (LZMA)</option>
+		</select>
+		<input type="submit" value="Download selection">
+	</form>
 	</ul>
 	{% else %}
 	<p>No files available.</p>

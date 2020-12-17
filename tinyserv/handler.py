@@ -110,7 +110,9 @@ class CustomHTTPRequestHandler(BaseHTTPRequestHandler):
             )
             self.wfile.write(
                 self.template_listing.render(
-                    entries=entries, allow_uploads=self.configuration.allow_uploads
+                    path=self.path,
+                    entries=entries,
+                    allow_uploads=self.configuration.allow_uploads,
                 ).encode("utf-8")
             )
 
