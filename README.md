@@ -5,10 +5,11 @@ to and from computers on a local network.
 
 The feature roadmap is the following:
 - [ ] Sortable columns
-- [ ] Optional `index.html`/`index.htm` serving
-- [ ] Hidden file listing
+- [x] Optional `index.html`/`index.htm` serving
+- [x] Hidden file listing
 - [ ] File upload
 - [ ] Directory/multiple file downloads
+- [ ] QR code for connecting (plus reminder of IP in text form)
 
 As you can clearly see not much (nothing) is implemented right now.
 
