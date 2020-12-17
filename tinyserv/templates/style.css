@@ -33,12 +33,16 @@ main > h1 {
 	margin-bottom: 1rem;
 }
 
+hr {
+	margin: 0.5rem;
+}
+
 /* Sections */
 
 main > section {
 	border: 1px solid #000000;
 	border-radius: 0.5rem;
-	padding: 0.5rem;
+	padding: 0.5rem 1rem;
 }
 
 main > section:not(:first-of-type) {
