@@ -17,8 +17,8 @@
 <section>
 	<h2>Files</h2>
 	{% if entries %}
-	<form action="" method="post">
-		<input type="hidden" name="action" value="download">
+	<form action="/download" method="post">
+		<input type="hidden" name="prefix" value="{{path}}">
 		<table class="file_table">
 			<colgroup>
 				<col class="checkbox">
@@ -46,11 +46,6 @@
 			</tbody>
 		</table>
 		<hr>
-		<label for="download_format">Download format:</label>
-		<select name="download_format">
-			<option value="zip" selected>.zip</option>
-			<option value="lzma">.xz (LZMA)</option>
-		</select>
 		<input type="submit" value="Download selection">
 	</form>
 	</ul>

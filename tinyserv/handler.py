@@ -2,8 +2,10 @@ from http.server import BaseHTTPRequestHandler
 from mimetypes import guess_type
 import os.path
 from typing import Optional
+from urllib.parse import parse_qs
 
 from jinja2 import Environment, PackageLoader, select_autoescape, Template
+import zipstream
 
 from tinyserv.config import Config
 from tinyserv.entry import Entry
@@ -118,7 +120,24 @@ class CustomHTTPRequestHandler(BaseHTTPRequestHandler):
 
     def do_POST(self) -> None:
         self.check_initialized()
-        print("POST", self.path)
+        if self.path == "/download":
+            query_body = self.rfile.read(int(self.headers['Content-Length']))
+            query = parse_qs(query_body.decode('utf-8'))
+            zipfile = zipstream.ZipFile(allowZip64=True)
+            prefix = query.get('prefix', ['/'])[0]
+            print(query)
+            for filename in query.get('file_selection', []):
+                file_path = os.path.join(self.configuration.path, filename[1:])
+                zipfile.write(file_path, filename.removeprefix(prefix))
+                # TODO use os.walk to properly handle directories
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/zip')
+            self.send_header('Content-Disposition', 'attachment; filename="tinyserv.zip"')
+            self.end_headers()
+            for data in zipfile:
+                self.wfile.write(data)
+        else:
+            raise ValueError("Invalid POST path.")
 
     def log_request(self, *args, **kwargs) -> None:
         self.check_initialized()
