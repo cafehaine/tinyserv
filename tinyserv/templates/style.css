@@ -14,7 +14,7 @@ body {
 }
 
 main > h1, main > section {
-	width: 90%;
+	width: 98%;
 	max-width: 100ch;
 	margin: 0 auto;
 }
