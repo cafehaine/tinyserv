@@ -6,6 +6,7 @@ from http.server import ThreadingHTTPServer
 from json import loads
 from subprocess import run
 from typing import List
+from webbrowser import open as webopen
 
 from tinyserv.handler import CustomHTTPRequestHandler
 from tinyserv.config import Config
@@ -52,6 +53,8 @@ def run_server(config: Config) -> None:
             )
         else:
             print("Connect to:")
+            if config.open_browser:
+                webopen(urls[0])
         for url in urls:
             print(f"- {url}")
         if config.show_qr:
@@ -68,6 +71,7 @@ def main() -> None:
     )
     parser.add_argument(
         "--open-browser",
+        "-b",
         action='store_true',
         help="Open the default browser once the server started.",
     )
