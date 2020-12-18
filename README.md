@@ -10,6 +10,7 @@ The feature roadmap is the following:
 - [ ] File upload
 - [x] Directory/multiple file downloads
 - [x] QR code for connecting (plus reminder of IP in text form)
+- [ ] Download resume
 
 As you can clearly see not much (nothing) is implemented right now.
 
