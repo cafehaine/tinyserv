@@ -76,3 +76,12 @@ table.file_table > tbody > tr > td:nth-of-type(4) {
 	text-align: " " right; /* not yet supported on any browser */
 	text-align: right;
 }
+
+th button {
+	border: 1px solid #000;
+	background: none transparent;
+	color: #000;
+	border-radius: 0.5rem;
+	padding: 0 0.2rem;
+	margin-left: 0.4rem;
+}

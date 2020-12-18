@@ -19,7 +19,7 @@
 	{% if entries %}
 	<form action="/download" method="post">
 		<input type="hidden" name="prefix" value="{{path}}">
-		<table class="file_table">
+		<table class="file_table" id="table">
 			<colgroup>
 				<col class="checkbox">
 				<col class="name">
@@ -29,9 +29,9 @@
 			<thead>
 				<tr>
 					<th></th>
-					<th>Name</th>
-					<th>Last modified</th>
-					<th>Size</th>
+					<th id="name_header">Name</th>
+					<th id="last_modified_header">Last modified</th>
+					<th id="size_header">Size</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -53,4 +53,5 @@
 	<p>No files available.</p>
 	{% endif %}
 </section>
+<script>{% include "table_sort.js" %}</script>
 {% endblock %}
